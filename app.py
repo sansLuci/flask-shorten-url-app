@@ -1,4 +1,4 @@
-from flask import Flask,render_template, request, redirect, url_for, flash, abort, session
+from flask import Flask,render_template, request, redirect, url_for, flash, abort, session, jsonify
 import json
 import os
 # from flask_bootstrap import Bootstrap
@@ -28,8 +28,8 @@ def new_url():
             return redirect(url_for('home'))
         
         urls[request.form['code']] = {'url': request.form['url']}
-        with open('urls.json','w') as urls_files:
-            json.dump(urls, urls_files)
+        with open('urls.json','w') as urls_file:
+            json.dump(urls, urls_file)
             session[request.form['code']] = True
         return render_template('new_url.html', code=request.form['code'])
 
@@ -59,7 +59,9 @@ def redirect_to_url(code):
                     return redirect(urls[code]['url'])
     return abort(404)
 
-
+@app.route('/api/')
+def session_api():
+    return jsonify(list(session.keys()))
 
 
 ################ERROR#################
